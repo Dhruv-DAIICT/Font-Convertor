@@ -5,13 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Font Convertor : Unicode to B Bharati</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
-        body {
+       body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            margin-bottom: 20px;
         }
 
         .container {
@@ -43,9 +49,23 @@
 </head>
 
 <body>
+    <h1>Unicode to B Bharati Converter</h1>
+    <div id="copyMessage" style="
+    position: fixed; 
+    bottom: 20px; 
+    background: #28a745; 
+    color: white; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    font-size: 16px; 
+    display: none;">
+    </div>
     <div class="container">
         <textarea id="inputText" placeholder="Type Unicode text here..."></textarea>
-        <button onclick="convertText()">Convert</button>
+        <div class="btn-group">
+            <button onclick="convertText()">Convert</button>
+            <button onclick="copyText()">Copy</button>
+        </div>
         <textarea id="outputText" readonly></textarea>
         <div id="previewText" class="preview"></div>
     </div>
@@ -54,7 +74,7 @@
         const ligatureMap = {
 
             //Prior
-            "સ્ત્ર": "Mºk", "સ્તુ": "MŒw", "સ્ત્રિ": "ÂMºk", "દ્ધાં" : "Økt", "ત્મિ": "Âí{",
+            "સ્ત્ર": "Mºk", "સ્તુ": "MŒw", "સ્ત્રિ": "ÂMºk", "દ્ધાં": "Økt", "ત્મિ": "Âí{", "દ્ધ  ": "Ø",
 
             "ક્ર": "¢", "ખ્ર": "¾ú", "ગ્ર": "„ú", "ઘ્ર": "½ú", "ચ્ર": "[ú", "છ્ર": "AÙ",
             "જ્ર": "@", "ઝ્ર": "C", "ટ્ર": "xÙ", "ઠ્ર": "XÙ", "ડ્ર": "zÙ", "ઢ્ર": "ZÙ",
@@ -82,29 +102,30 @@
 
             "ષ્ણ": "»ý", "ર્ણ": "ýo", "ણ્ય": "ÛÞ", "ળ્ય": "éÞ", "ળ્વ": "éð", "ળ્ર": "¤ú",
             "ર્મ": "}o", "ર્શ": "þo", "ર્ષ": "»ko", "જ્ઞ": "¿k",
-            "ર્સ": "‚o", "ર્હ": "no", "ક્ત": "õŒ", "ક્શ": "õþ", "ક્ષ": "ûk", "સ્થ": "MÚk", 
-            "સ્ત્ર": "Mºk", "સ્તુ": "MŒw", "સ્ત્રિ": "ÂMºk", "ત્ત": "¥k", "ત્થ": "íÚk", "ત્ન": "J", 
-            "ત્મ": "í{", "ત્સ": "í‚", "ત્શ": "íþ", "ન્દ": "LË", "ન્મ": "L{", "ન્ધ": "LÄ", 
+            "ર્સ": "‚o", "ર્હ": "no", "ક્ત": "õŒ", "ક્શ": "õþ", "ક્ષ": "ûk", "સ્થ": "MÚk",
+            "સ્ત્ર": "Mºk", "સ્તુ": "MŒw", "સ્ત્રિ": "ÂMºk", "ત્ત": "¥k", "ત્થ": "íÚk", "ત્ન": "J",
+            "ત્મ": "í{", "ત્સ": "í‚", "ત્શ": "íþ", "ન્દ": "LË", "ન્મ": "L{", "ન્ધ": "LÄ",
             "ન્હ": "Ln", "ન્ગ": "L„", "ન્ઝ": "LÍ", "ન્ત": "LŒ", "ન્થ": "LÚk", "મ્ન": "B™",
-            "મ્મ": "B{", "મ્ભ": "B¼", "મ્વ": "Bð", "પ્ત": "ó", "પ્ન": "¡", "પ્મ": "Ã{", 
-            "લ્પ": "Õ…", "લ્ક": "Õf", "લ્ત": "ÕŒ", "લ્ગ": "Õ„", "લ્ફ": "ÕV", "લ્ભ": "Õ¼", 
-            "શ્ચ": "ù", "શ્ન": "§", "શ્મ": "~{", "ષ્ક": "»f", "ષ્પ": "»…", "વ્ત": "ÔŒ", 
+            "મ્મ": "B{", "મ્ભ": "B¼", "મ્વ": "Bð", "પ્ત": "ó", "પ્ન": "¡", "પ્મ": "Ã{",
+            "લ્પ": "Õ…", "લ્ક": "Õf", "લ્ત": "ÕŒ", "લ્ગ": "Õ„", "લ્ફ": "ÕV", "લ્ભ": "Õ¼",
+            "શ્ચ": "ù", "શ્ન": "§", "શ્મ": "~{", "ષ્ક": "»f", "ષ્પ": "»…", "વ્ત": "ÔŒ",
             "વ્થ": "ÔÚk", "વ્દ": "ÔË", "વ્ન": "Ô™", "વ્મ": "Ô{", "હ્દ": "nTË", "હ્ન": "ö",
             "હ્મ": "ñ", "હ્ર": "´", "હ્વ": "b", "હૃ": "Ó", "ક્લ": "õ÷", "ક્ત": "õŒ", "ક્ન": "õ™",
             "ક્મ": "õ}", "ક્શ": "õþ", "ગ્ન": "ø™", "ગ્મ": "ø}", "ગ્દ": "øË", "ગ્બ": "øƒ",
-            "ગ્લ": "ø÷", "ત્ત": "¥k", "ત્થ": "íÚk", "ત્સ": "í‚", "ત્શ": "íþ", "ત્વ": "íð", 
-            "ત્ન": "J", "ત્મ": "í}", "દ્ભ": "K", "દ્મ": "È", "દ્ન": "ËT™", "દ્વ": "î", 
+            "ગ્લ": "ø÷", "ત્ત": "¥k", "ત્થ": "íÚk", "ત્સ": "í‚", "ત્શ": "íþ", "ત્વ": "íð",
+            "ત્ન": "J", "ત્મ": "í}", "દ્ભ": "K", "દ્મ": "È", "દ્ન": "ËT™", "દ્વ": "î",
             "ન્દ": "LË", "ન્મ": "L}", "ન્ધ": "LÄ", "ન્હ": "Ln", "પ્ત": "ó", "પ્ન": "¡",
-            "પ્મ": "Ã}", "પ્લ": "Ã÷", "મ્ન": "B™", "મ્મ": "B}", "મ્ભ": "B¼", "મ્વ": "Bð", 
-            "લ્ક": "Õf", "લ્ગ": "Õ„", "લ્ફ": "ÕV", "લ્ભ": "Õ¼", "લ્ત": "ÕŒ", "વ્ત": "ÔŒ", 
-            "વ્થ": "ÔÚk", "વ્દ": "ÔË", "વ્ન": "Ô™", "વ્મ": "Ô}", "શ્ચ": "ù", "શ્ન": "§", 
-            "શ્મ": "~{", "ષ્ક": "»f", "ષ્પ": "»…", "હ્દ": "nTË", "હ્ન": "ö", "હ્મ": "ñ", 
-            "હ્ર": "´", "હ્વ": "b", "જી": "S", "સ્ત્ર": "Mºk", "નૈ": "™i", "દ્ધ  ": "Ø", 
+            "પ્મ": "Ã}", "પ્લ": "Ã÷", "મ્ન": "B™", "મ્મ": "B}", "મ્ભ": "B¼", "મ્વ": "Bð",
+            "લ્ક": "Õf", "લ્ગ": "Õ„", "લ્ફ": "ÕV", "લ્ભ": "Õ¼", "લ્ત": "ÕŒ", "વ્ત": "ÔŒ",
+            "વ્થ": "ÔÚk", "વ્દ": "ÔË", "વ્ન": "Ô™", "વ્મ": "Ô}", "શ્ચ": "ù", "શ્ન": "§",
+            "શ્મ": "~{", "ષ્ક": "»f", "ષ્પ": "»…", "હ્દ": "nTË", "હ્ન": "ö", "હ્મ": "ñ",
+            "હ્ર": "´", "હ્વ": "b", "જી": "S", "સ્ત્ર": "Mºk", "નૈ": "™i", "દ્ધ  ": "Ø",
             "રૂ ": "Y ", "રુ": "Á", "ર્ક": "fo", "ર્ખ": "¾o", "ર્ગ": "„o", "ર્ઘ": "½o",
-            "ર્ચ": "[o", "ર્ઝ": "Ío", "ર્ટ": "xo", "ર્ઠ": "Xo", "ર્ડ": "zo", "ર્ઢ": "Zo", 
+            "ર્ચ": "[o", "ર્ઝ": "Ío", "ર્ટ": "xo", "ર્ઠ": "Xo", "ર્ડ": "zo", "ર્ઢ": "Zo",
             "ર્ણ": "ýo", "ર્ત": "Œo", "ર્થ": "Úko", "ર્દ": "Ëo", "ર્ધ": "Äo", "ર્ન": "™o",
-            "ર્પ": "…o", "ર્ફ": "Vo", "ર્બ": "ƒo", "ર્ભ": "¼o", "ર્મ": "{o", "ર્ય": "Þo", 
-            "ર્લ": "÷o", "ર્વ": "ðo", "ર્ષ": "»ko", "ર્હ": "no", "જા" : "ò", "ન્ન" : "Òk"
+            "ર્પ": "…o", "ર્ફ": "Vo", "ર્બ": "ƒo", "ર્ભ": "¼o", "ર્મ": "{o", "ર્ય": "Þo",
+            "ર્લ": "÷o", "ર્વ": "ðo", "ર્ષ": "»ko", "ર્હ": "no", "જા": "ò", "ન્ન": "Òk",
+            "સ્ક" : "Mf", "ર્જ" : "so", "ધ્ધ" : "æÄ", "ન્મ" : "L{"
 
         };
 
@@ -168,6 +189,32 @@
 
             document.getElementById("outputText").value = output;
             document.getElementById("previewText").textContent = output;
+        }
+        function copyText() {
+            let outputText = document.getElementById("outputText").value;
+            if (!outputText) {
+                showMessage("No text to copy!", "red");
+                return;
+            }
+
+            navigator.clipboard.writeText(outputText)
+                .then(() => {
+                    showMessage("Copied to clipboard!", "#28a745");
+                })
+                .catch(() => {
+                    showMessage("Copy failed! Try manually.", "red");
+                });
+        }
+
+        function showMessage(message, color) {
+            let copyMessage = document.getElementById("copyMessage");
+            copyMessage.textContent = message;
+            copyMessage.style.background = color;
+            copyMessage.style.display = "block";
+
+            setTimeout(() => {
+                copyMessage.style.display = "none";
+            }, 2000);
         }
     </script>
 </body>
